@@ -120,8 +120,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"src/Calculator.ts":[function(require,module,exports) {
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -139,21 +137,38 @@ function () {
       num2: ''
     };
     this.operating = false;
+    this.secondNumber = false;
     this.initElements(btns);
   }
 
   Calculator.prototype.operate = function (val) {
-    if (!this.operating) {
-      this.operating = true;
-      this.startOperation(val);
+    console.log(this.operating);
+
+    if (this.operating === false) {
+      this.addFirstBuffer(val);
     } else {
-      this.endOperation(val);
+      this.addSecondBuffer(val);
     }
   };
 
-  Calculator.prototype.endOperation = function (val) {};
+  Calculator.prototype.calculate = function () {
+    this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+  };
 
-  Calculator.prototype.startOperation = function (val) {
+  Calculator.prototype.setOperator = function (val) {
+    this.operating = true;
+    this.buffer.op = val;
+    this.screen = '';
+  };
+
+  Calculator.prototype.addSecondBuffer = function (val) {
+    console.log("Second buffer");
+    this.buffer.num2 += val;
+    this.screen = String(this.buffer.num2);
+  };
+
+  Calculator.prototype.addFirstBuffer = function (val) {
+    console.log("Primer buffer");
     this.buffer.num1 += val;
     this.screen = String(this.buffer.num1);
   };
@@ -236,12 +251,9 @@ function () {
 
         case '1':
           btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
+            _this.operate(String(btn.dataset.btn));
 
-            _this.startOperation(String(btn.dataset.btn));
-
-            console.log(String(btn.dataset.btn));
-            console.log(_this.screen);
+            console.log('screen: ' + _this.screen);
           });
           break;
 
@@ -259,10 +271,8 @@ function () {
 
         case 'plus':
           btn.addEventListener('click', function () {
-            console.log(_typeof(btn.dataset.btn));
-            _this.operating = true;
-            _this.buffer.op = String(btn.dataset.btn);
-            _this.screen = '';
+            _this.setOperator(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
@@ -281,7 +291,9 @@ function () {
 
         case 'equals':
           btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
+            _this.calculate();
+
+            console.log('result: ' + _this.result);
           });
           break;
       }
@@ -339,7 +351,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33979" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39373" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

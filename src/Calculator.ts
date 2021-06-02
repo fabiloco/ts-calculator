@@ -13,6 +13,7 @@ export class Calculator {
 		num2: '',
 	}
 	private operating: boolean = false;
+	private secondNumber: boolean = false;
 
 	constructor(btns: HTMLElement[]) {
 		
@@ -21,19 +22,32 @@ export class Calculator {
 	}
 
 	operate(val: string) {
-		if(!this.operating) {
-			this.operating = true;
-			this.startOperation(val);
+		console.log(this.operating);
+		if(this.operating === false) {
+			this.addFirstBuffer(val);
 		}else {
-			this.endOperation(val);
+			this.addSecondBuffer(val);
 		}
 	}
 
-	endOperation(val: string) {
-		
+	calculate() {
+		this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
 	}
 
-	startOperation(val: string) {
+	setOperator(val: string) {
+		this.operating = true;
+		this.buffer.op = val;
+		this.screen = '';
+	}
+	
+	addSecondBuffer(val: string) {
+		console.log("Second buffer");
+		this.buffer.num2 += val;
+		this.screen = String(this.buffer.num2);
+	}
+
+	addFirstBuffer(val: string) {
+		console.log("Primer buffer");
 		this.buffer.num1 += val;
 		this.screen = String(this.buffer.num1);
 	}
@@ -104,10 +118,8 @@ export class Calculator {
 					break;
 				case '1':
 					btn.addEventListener('click', ()=>{
-						console.log(btn.dataset.btn);
-						this.startOperation(String(btn.dataset.btn));
-						console.log(String(btn.dataset.btn));
-						console.log(this.screen);
+						this.operate(String(btn.dataset.btn));
+						console.log('screen: '+this.screen);
 				})
 					break;
 				case '2':
@@ -122,10 +134,7 @@ export class Calculator {
 					break;
 				case 'plus':
 					btn.addEventListener('click', ()=>{
-					console.log(typeof btn.dataset.btn);
-					this.operating = true;
-					this.buffer.op = String(btn.dataset.btn);
-					this.screen = '';
+					this.setOperator(String(btn.dataset.btn));
 					console.log(btn.dataset.btn);
 				})
 					break;
@@ -141,7 +150,8 @@ export class Calculator {
 					break;
 				case 'equals':
 					btn.addEventListener('click', ()=>{
-						console.log(btn.dataset.btn);
+					this.calculate();
+					console.log('result: '+this.result);
 				})
 					break;
 			}
