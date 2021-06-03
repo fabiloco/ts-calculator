@@ -128,7 +128,7 @@ exports.Calculator = void 0;
 var Calculator =
 /** @class */
 function () {
-  function Calculator(btns) {
+  function Calculator(btns, screen) {
     this.result = 0;
     this.screen = '';
     this.buffer = {
@@ -137,7 +137,7 @@ function () {
       num2: ''
     };
     this.operating = false;
-    this.secondNumber = false;
+    this.screenElement = screen;
     this.initElements(btns);
   }
 
@@ -153,6 +153,7 @@ function () {
 
   Calculator.prototype.calculate = function () {
     this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+    this.screen = '' + this.result;
   };
 
   Calculator.prototype.setOperator = function (val) {
@@ -173,10 +174,20 @@ function () {
     this.screen = String(this.buffer.num1);
   };
 
+  Calculator.prototype.updateScreen = function () {
+    this.screenElement.innerText = this.screen;
+  };
+
+  Calculator.prototype.cleanBuffer = function () {
+    this.buffer.num1 = '';
+    this.buffer.num2 = '';
+    this.buffer.op = '';
+  };
+
   Calculator.prototype.initElements = function (btns) {
     var _this = this;
 
-    console.log(btns);
+    console.log(btns[0]);
     btns.forEach(function (btn) {
       switch (btn.dataset.btn) {
         case 'trash':
@@ -204,17 +215,23 @@ function () {
           break;
 
         case '7':
-          btn.addEventListener('click', function () {});
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+          });
           break;
 
         case '8':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
 
         case '9':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
@@ -227,18 +244,24 @@ function () {
 
         case '4':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
 
         case '5':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
 
         case '6':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
@@ -253,19 +276,19 @@ function () {
           btn.addEventListener('click', function () {
             _this.operate(String(btn.dataset.btn));
 
-            console.log('screen: ' + _this.screen);
+            _this.updateScreen();
           });
           break;
 
         case '2':
           btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
+            _this.operate(String(btn.dataset.btn));
           });
           break;
 
         case '3':
           btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
+            _this.operate(String(btn.dataset.btn));
           });
           break;
 
@@ -279,12 +302,14 @@ function () {
 
         case '0':
           btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
+            _this.operate(String(btn.dataset.btn));
           });
           break;
 
         case 'comma':
           btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
             console.log(btn.dataset.btn);
           });
           break;
@@ -294,6 +319,10 @@ function () {
             _this.calculate();
 
             console.log('result: ' + _this.result);
+
+            _this.updateScreen();
+
+            _this.cleanBuffer();
           });
           break;
       }
@@ -321,8 +350,9 @@ Object.defineProperty(exports, "__esModule", {
 var Calculator_1 = __importDefault(require("./Calculator"));
 
 var buttons = document.querySelectorAll(".buttons__btn");
+var screen = document.querySelector(".display__results");
 console.log(buttons);
-var calculator = new Calculator_1.default(buttons);
+var calculator = new Calculator_1.default(buttons, screen);
 },{"./Calculator":"src/Calculator.ts"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
