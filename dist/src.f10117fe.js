@@ -132,17 +132,18 @@ function () {
     this.result = 0;
     this.screen = '';
     this.buffer = {
-      num1: '',
+      num1: '0',
       op: '',
-      num2: ''
+      num2: '0'
     };
     this.operating = false;
+    this.history = [];
     this.screenElement = screen;
     this.initElements(btns);
   }
 
   Calculator.prototype.operate = function (val) {
-    console.log(this.operating);
+    console.log('Segundo movimiento', this.operating);
 
     if (this.operating === false) {
       this.addFirstBuffer(val);
@@ -151,26 +152,53 @@ function () {
     }
   };
 
-  Calculator.prototype.calculate = function () {
+  Calculator.prototype.calculateWithBuffer = function () {
+    this.buffer.num1 = '' + this.result;
     this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
-    this.screen = '' + this.result;
+    this.history.push(this.buffer);
+    this.screen = "" + this.result;
+    this.updateScreen();
+  };
+
+  Calculator.prototype.calculate = function () {
+    //console.log(`Buffer tiene elementos? = ${this.history.length !== 0}`);
+    if (this.history.length !== 0) {
+      this.buffer.num1 = '' + this.result;
+    } //console.log('buffer dos: ',this.buffer.num2);
+    //console.log(`${this.buffer.num1} + ${this.buffer.num2} = ${parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2))}`);
+
+
+    this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+    this.history.push(this.buffer); //console.log(this.history);
+
+    this.buffer.num2 = '0';
+    this.screen = "" + this.result;
+    this.updateScreen();
   };
 
   Calculator.prototype.setOperator = function (val) {
     this.operating = true;
     this.buffer.op = val;
-    this.screen = '';
+    this.screen += ' + ';
   };
 
   Calculator.prototype.addSecondBuffer = function (val) {
-    console.log("Second buffer");
-    this.buffer.num2 += val;
+    if (this.buffer.num2 === '0') {
+      this.buffer.num2 = val;
+    } else {
+      this.buffer.num2 += val;
+    }
+
     this.screen = String(this.buffer.num2);
   };
 
   Calculator.prototype.addFirstBuffer = function (val) {
-    console.log("Primer buffer");
-    this.buffer.num1 += val;
+    if (this.buffer.num1 === '0') {
+      this.buffer.num1 = val;
+    } else {
+      this.buffer.num1 += val;
+    }
+
     this.screen = String(this.buffer.num1);
   };
 
@@ -179,15 +207,15 @@ function () {
   };
 
   Calculator.prototype.cleanBuffer = function () {
-    this.buffer.num1 = '';
-    this.buffer.num2 = '';
+    this.buffer.num1 = '0';
     this.buffer.op = '';
+    this.buffer.num2 = '0';
+    this.operating = false;
   };
 
   Calculator.prototype.initElements = function (btns) {
     var _this = this;
 
-    console.log(btns[0]);
     btns.forEach(function (btn) {
       switch (btn.dataset.btn) {
         case 'trash':
@@ -294,7 +322,12 @@ function () {
 
         case 'plus':
           btn.addEventListener('click', function () {
+            //this.calculateWithBuffer();
             _this.setOperator(String(btn.dataset.btn));
+
+            _this.calculate();
+
+            _this.updateScreen();
 
             console.log(btn.dataset.btn);
           });
@@ -317,10 +350,6 @@ function () {
         case 'equals':
           btn.addEventListener('click', function () {
             _this.calculate();
-
-            console.log('result: ' + _this.result);
-
-            _this.updateScreen();
 
             _this.cleanBuffer();
           });
@@ -381,7 +410,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39373" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36305" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
