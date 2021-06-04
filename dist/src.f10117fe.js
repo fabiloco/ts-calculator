@@ -152,23 +152,50 @@ function () {
     }
   };
 
-  Calculator.prototype.calculateWithBuffer = function () {
-    this.buffer.num1 = '' + this.result;
-    this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
-    this.history.push(this.buffer);
-    this.screen = "" + this.result;
-    this.updateScreen();
-  };
-
   Calculator.prototype.calculate = function () {
     //console.log(`Buffer tiene elementos? = ${this.history.length !== 0}`);
     if (this.history.length !== 0) {
+      console.log('historial vacio');
       this.buffer.num1 = '' + this.result;
     } //console.log('buffer dos: ',this.buffer.num2);
     //console.log(`${this.buffer.num1} + ${this.buffer.num2} = ${parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2))}`);
 
 
-    this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+    switch (this.buffer.op) {
+      case 'sum':
+        this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+        break;
+
+      case 'menus':
+        this.result = parseFloat(String(this.buffer.num1)) - parseFloat(String(this.buffer.num2));
+        break;
+
+      case 'times':
+        if (this.buffer.num2 === '0') {
+          //this.result = parseFloat(String(this.buffer.num1));
+          this.result = 0;
+        } // else if(this.buffer.num1 === '0') {
+        // 	this.result = 0;
+        // } 
+        else {
+            this.result = parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2));
+          }
+
+        console.log(parseFloat(String(this.buffer.num1)) + " * " + parseFloat(String(this.buffer.num2)) + ": " + parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2)));
+        break;
+
+      case 'over':
+        this.result = parseFloat(String(this.buffer.num1)) / parseFloat(String(this.buffer.num2));
+
+        if (this.result === Infinity) {
+          console.log('Es infinito');
+          this.result = parseFloat(String(this.buffer.num1)) / 1;
+        }
+
+        console.log("El resultado de la división: " + this.result);
+        break;
+    }
+
     this.history.push(this.buffer); //console.log(this.history);
 
     this.buffer.num2 = '0';
@@ -211,6 +238,7 @@ function () {
     this.buffer.op = '';
     this.buffer.num2 = '0';
     this.operating = false;
+    this.history = [];
   };
 
   Calculator.prototype.initElements = function (btns) {
@@ -220,7 +248,11 @@ function () {
       switch (btn.dataset.btn) {
         case 'trash':
           btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
+            _this.cleanBuffer();
+
+            _this.screen = '0';
+
+            _this.updateScreen();
           });
           break;
 
@@ -229,76 +261,7 @@ function () {
             console.log(btn.dataset.btn);
           });
           break;
-
-        case 'percent':
-          btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case 'over':
-          btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case '7':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-          });
-          break;
-
-        case '8':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case '9':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case 'times':
-          btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case '4':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case '5':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case '6':
-          btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
-
-            console.log(btn.dataset.btn);
-          });
-          break;
-
-        case 'menu':
-          btn.addEventListener('click', function () {
-            console.log(btn.dataset.btn);
-          });
-          break;
+        // Numbers ************************************
 
         case '1':
           btn.addEventListener('click', function () {
@@ -311,18 +274,92 @@ function () {
         case '2':
           btn.addEventListener('click', function () {
             _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
           });
           break;
 
         case '3':
           btn.addEventListener('click', function () {
             _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
           });
           break;
 
-        case 'plus':
+        case '4':
           btn.addEventListener('click', function () {
-            //this.calculateWithBuffer();
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '5':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '6':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '7':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '8':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '9':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case '0':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+
+        case 'comma':
+          btn.addEventListener('click', function () {
+            _this.operate(String(btn.dataset.btn));
+
+            _this.updateScreen();
+          });
+          break;
+        // Operators *************************
+
+        case 'percent':
+          btn.addEventListener('click', function () {
+            console.log(btn.dataset.btn);
+          });
+          break;
+
+        case 'over':
+          btn.addEventListener('click', function () {
             _this.setOperator(String(btn.dataset.btn));
 
             _this.calculate();
@@ -333,15 +370,38 @@ function () {
           });
           break;
 
-        case '0':
+        case 'times':
           btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
+            _this.setOperator(String(btn.dataset.btn));
+
+            _this.calculate();
+
+            _this.updateScreen();
+
+            console.log(btn.dataset.btn);
           });
           break;
 
-        case 'comma':
+        case 'menus':
           btn.addEventListener('click', function () {
-            _this.operate(String(btn.dataset.btn));
+            _this.setOperator(String(btn.dataset.btn));
+
+            _this.calculate();
+
+            _this.updateScreen();
+
+            console.log(btn.dataset.btn);
+          });
+          break;
+
+        case 'sum':
+          btn.addEventListener('click', function () {
+            //this.calculateWithBuffer();
+            _this.setOperator(String(btn.dataset.btn));
+
+            _this.calculate();
+
+            _this.updateScreen();
 
             console.log(btn.dataset.btn);
           });
@@ -410,7 +470,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36305" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42161" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

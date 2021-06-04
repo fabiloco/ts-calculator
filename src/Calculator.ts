@@ -12,6 +12,7 @@ export class Calculator {
 		op: '',
 		num2: '0',
 	}
+
 	private operating: boolean = false;
 	private screenElement: HTMLElement;
 	private history: Buffer[] = [];
@@ -31,33 +32,59 @@ export class Calculator {
 		}
 	}
 
-	calculateWithBuffer() {
-		this.buffer.num1 = '' + this.result;
-		this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
-
-		this.history.push(this.buffer);
-		this.screen = "" + this.result;
-
-		
-		this.updateScreen();
-	}
-
 	calculate() {
 		
 		//console.log(`Buffer tiene elementos? = ${this.history.length !== 0}`);
 		if(this.history.length !== 0) {
+			console.log('historial vacio');
 			this.buffer.num1 = '' + this.result;
-		}
+		} 
 		
 		//console.log('buffer dos: ',this.buffer.num2);
 		//console.log(`${this.buffer.num1} + ${this.buffer.num2} = ${parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2))}`);
 
-		this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+		switch(this.buffer.op) {
+			case 'sum':
+				this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
+				break;
+
+			case 'menus':
+				this.result = parseFloat(String(this.buffer.num1)) - parseFloat(String(this.buffer.num2));
+				break;
+
+			case 'times':
+				if(this.buffer.num2 === '0') {
+					//this.result = parseFloat(String(this.buffer.num1));
+					this.result = 0;
+				} 
+				// else if(this.buffer.num1 === '0') {
+				// 	this.result = 0;
+				// } 
+				else {
+					this.result = parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2));
+				}
+
+				console.log(`${parseFloat(String(this.buffer.num1))} * ${parseFloat(String(this.buffer.num2))}: ${parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2))}`);
+				break;
+
+			case 'over':
+				this.result = parseFloat(String(this.buffer.num1)) / parseFloat(String(this.buffer.num2));	
+				if(this.result === Infinity) {
+					console.log('Es infinito');
+					this.result = parseFloat(String(this.buffer.num1)) / 1;
+				}
+				console.log("El resultado de la división: "+this.result);
+				break;
+		}
+
+		
+
 		this.history.push(this.buffer);
 		//console.log(this.history);
 		this.buffer.num2 = '0';
 		this.screen = "" + this.result;
 		this.updateScreen();
+	
 	}
 
 	setOperator(val: string) {
@@ -93,6 +120,7 @@ export class Calculator {
 		this.buffer.op = '';
 		this.buffer.num2 = '0';
 		this.operating = false;
+		this.history = [];
 	}
 
 	initElements(btns: HTMLElement[]): void {
@@ -100,14 +128,100 @@ export class Calculator {
 			switch(btn.dataset.btn) {
 				case 'trash':
 					btn.addEventListener('click', ()=>{
-					this.operate(String(btn.dataset.btn));
+					this.cleanBuffer();
+					this.screen = '0';
+					this.updateScreen();
 				})
 					break;
+
 				case '?':
 					btn.addEventListener('click', ()=>{
 						console.log(btn.dataset.btn);
 				})
 					break;
+				
+				
+				// Numbers ************************************
+
+				case '1':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				});
+					break;
+
+				case '2':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '3':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})	
+					break;
+
+				case '4':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '5':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '6':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '7':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '8':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+					
+				case '9':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case '0':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				case 'comma':
+					btn.addEventListener('click', ()=>{
+						this.operate(String(btn.dataset.btn));
+						this.updateScreen();
+				})
+					break;
+
+				// Operators *************************
+
 				case 'percent':
 					btn.addEventListener('click', ()=>{
 						console.log(btn.dataset.btn);
@@ -115,96 +229,46 @@ export class Calculator {
 					break;
 				case 'over':
 					btn.addEventListener('click', ()=>{
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '7':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-
-				})
-					break;
-				case '8':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '9':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case 'times':
-					btn.addEventListener('click', ()=>{
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '4':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '5':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '6':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case 'menu':
-					btn.addEventListener('click', ()=>{
-						console.log(btn.dataset.btn);
-				})
-					break;
-				case '1':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-						this.updateScreen();
-				})
-					break;
-				case '2':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-				})
-					break;
-				case '3':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-				})
-					break;
-				case 'plus':
-					btn.addEventListener('click', () => {
-						//this.calculateWithBuffer();
 						this.setOperator(String(btn.dataset.btn));
 						this.calculate();
 						this.updateScreen();
 						console.log(btn.dataset.btn);
 				})
 					break;
-				case '0':
+
+				case 'times':
 					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
-				})
-					break;
-				case 'comma':
-					btn.addEventListener('click', ()=>{
-						this.operate(String(btn.dataset.btn));
+						this.setOperator(String(btn.dataset.btn));
+						this.calculate();
+						this.updateScreen();
 						console.log(btn.dataset.btn);
 				})
 					break;
+				
+				case 'menus':
+					btn.addEventListener('click', ()=>{
+						this.setOperator(String(btn.dataset.btn));
+						this.calculate();
+						this.updateScreen();
+						console.log(btn.dataset.btn);
+				});
+					break;
+				
+				case 'sum':
+					btn.addEventListener('click', () => {
+						//this.calculateWithBuffer();
+						this.setOperator(String(btn.dataset.btn));
+						this.calculate();
+						this.updateScreen();
+						console.log(btn.dataset.btn);
+				});
+					break;
+
 				case 'equals':
 					btn.addEventListener('click', ()=>{
 					this.calculate();
 					this.cleanBuffer();
-				})
+				});
 					break;
 			}
 		});
