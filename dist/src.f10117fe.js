@@ -131,114 +131,71 @@ function () {
   function Calculator(btns, screen) {
     this.result = 0;
     this.screen = '';
-    this.buffer = {
-      num1: '0',
-      op: '',
-      num2: '0'
-    };
-    this.operating = false;
+    this.operating = true;
     this.history = [];
+    this.buffer = '';
+    this.operator = '';
     this.screenElement = screen;
     this.initElements(btns);
   }
 
   Calculator.prototype.operate = function (val) {
-    console.log('Segundo movimiento', this.operating);
-
-    if (this.operating === false) {
-      this.addFirstBuffer(val);
+    if (this.operating) {
+      this.buffer += val;
+      this.screen = this.buffer;
     } else {
-      this.addSecondBuffer(val);
+      this.addNumber(this.buffer);
+      this.buffer = '';
+      this.operating = true;
     }
+
+    console.log(this.history);
   };
 
   Calculator.prototype.calculate = function () {
-    //console.log(`Buffer tiene elementos? = ${this.history.length !== 0}`);
-    if (this.history.length !== 0) {
-      console.log('historial vacio');
-      this.buffer.num1 = '' + this.result;
-    } //console.log('buffer dos: ',this.buffer.num2);
-    //console.log(`${this.buffer.num1} + ${this.buffer.num2} = ${parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2))}`);
-
-
-    switch (this.buffer.op) {
-      case 'sum':
-        this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
-        break;
-
-      case 'menus':
-        this.result = parseFloat(String(this.buffer.num1)) - parseFloat(String(this.buffer.num2));
-        break;
-
-      case 'times':
-        if (this.buffer.num2 === '0') {
-          //this.result = parseFloat(String(this.buffer.num1));
-          this.result = 0;
-        } // else if(this.buffer.num1 === '0') {
-        // 	this.result = 0;
-        // } 
-        else {
-            this.result = parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2));
-          }
-
-        console.log(parseFloat(String(this.buffer.num1)) + " * " + parseFloat(String(this.buffer.num2)) + ": " + parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2)));
-        break;
-
-      case 'over':
-        this.result = parseFloat(String(this.buffer.num1)) / parseFloat(String(this.buffer.num2));
-
-        if (this.result === Infinity) {
-          console.log('Es infinito');
-          this.result = parseFloat(String(this.buffer.num1)) / 1;
-        }
-
-        console.log("El resultado de la división: " + this.result);
-        break;
-    }
-
-    this.history.push(this.buffer); //console.log(this.history);
-
-    this.buffer.num2 = '0';
-    this.screen = "" + this.result;
-    this.updateScreen();
-  };
-
-  Calculator.prototype.setOperator = function (val) {
-    this.operating = true;
-    this.buffer.op = val;
-    this.screen += ' + ';
-  };
-
-  Calculator.prototype.addSecondBuffer = function (val) {
-    if (this.buffer.num2 === '0') {
-      this.buffer.num2 = val;
+    if (this.history.length === 0) {
+      console.log('El array esta vacío');
+    } else if (this.history.length === 1) {
+      this.result = this.history[0];
     } else {
-      this.buffer.num2 += val;
+      switch (this.operator) {
+        case 'sum':
+          this.result = this.history[this.history.length - 2] + this.history[this.history.length - 1];
+          this.history.push(this.result);
+          break;
+
+        case 'menus':
+          this.result = this.history[this.history.length - 2] - this.history[this.history.length - 1];
+          this.history.push(this.result);
+          break;
+
+        case 'times':
+          this.result = this.history[this.history.length - 2] * this.history[this.history.length - 1];
+          this.history.push(this.result);
+          break;
+
+        case 'over':
+          this.result = this.history[this.history.length - 2] / this.history[this.history.length - 1];
+          this.history.push(this.result);
+          break;
+      }
     }
 
-    this.screen = String(this.buffer.num2);
+    this.screen = '' + this.result;
+    console.log('result: ', this.result);
   };
 
-  Calculator.prototype.addFirstBuffer = function (val) {
-    if (this.buffer.num1 === '0') {
-      this.buffer.num1 = val;
-    } else {
-      this.buffer.num1 += val;
-    }
-
-    this.screen = String(this.buffer.num1);
+  Calculator.prototype.addNumber = function (val) {
+    this.history.push(parseFloat(val));
   };
 
   Calculator.prototype.updateScreen = function () {
     this.screenElement.innerText = this.screen;
   };
 
-  Calculator.prototype.cleanBuffer = function () {
-    this.buffer.num1 = '0';
-    this.buffer.op = '';
-    this.buffer.num2 = '0';
-    this.operating = false;
+  Calculator.prototype.cleanHistory = function () {
     this.history = [];
+    this.buffer = '';
   };
 
   Calculator.prototype.initElements = function (btns) {
@@ -248,7 +205,7 @@ function () {
       switch (btn.dataset.btn) {
         case 'trash':
           btn.addEventListener('click', function () {
-            _this.cleanBuffer();
+            _this.cleanHistory();
 
             _this.screen = '0';
 
@@ -360,7 +317,11 @@ function () {
 
         case 'over':
           btn.addEventListener('click', function () {
-            _this.setOperator(String(btn.dataset.btn));
+            _this.operating = false;
+
+            _this.operate('');
+
+            _this.operator = String(btn.dataset.btn);
 
             _this.calculate();
 
@@ -372,7 +333,11 @@ function () {
 
         case 'times':
           btn.addEventListener('click', function () {
-            _this.setOperator(String(btn.dataset.btn));
+            _this.operating = false;
+
+            _this.operate('');
+
+            _this.operator = String(btn.dataset.btn);
 
             _this.calculate();
 
@@ -384,7 +349,11 @@ function () {
 
         case 'menus':
           btn.addEventListener('click', function () {
-            _this.setOperator(String(btn.dataset.btn));
+            _this.operating = false;
+
+            _this.operate('');
+
+            _this.operator = String(btn.dataset.btn);
 
             _this.calculate();
 
@@ -396,8 +365,11 @@ function () {
 
         case 'sum':
           btn.addEventListener('click', function () {
-            //this.calculateWithBuffer();
-            _this.setOperator(String(btn.dataset.btn));
+            _this.operating = false;
+
+            _this.operate('');
+
+            _this.operator = String(btn.dataset.btn);
 
             _this.calculate();
 
@@ -409,9 +381,15 @@ function () {
 
         case 'equals':
           btn.addEventListener('click', function () {
+            _this.operating = false;
+
+            _this.operate('');
+
             _this.calculate();
 
-            _this.cleanBuffer();
+            _this.updateScreen();
+
+            _this.cleanHistory();
           });
           break;
       }
@@ -470,7 +448,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42161" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42245" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

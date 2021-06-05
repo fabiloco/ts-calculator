@@ -7,15 +7,11 @@ interface Buffer{
 export class Calculator {
 	private result: number = 0;
 	private screen: string = '';
-	private buffer: Buffer = {
-		num1: '0',
-		op: '',
-		num2: '0',
-	}
-
-	private operating: boolean = false;
+	private operating: boolean = true;
 	private screenElement: HTMLElement;
-	private history: Buffer[] = [];
+	private history: number[] = [];
+	private buffer: string = '';
+	private operator: string = '';
 
 	constructor(btns: HTMLElement[], screen: HTMLElement) {
 		this.screenElement = screen;
@@ -24,103 +20,62 @@ export class Calculator {
 
 	operate(val: string) {
 		
-		console.log('Segundo movimiento',this.operating);
-		if(this.operating === false) {
-			this.addFirstBuffer(val);
-		}else {
-			this.addSecondBuffer(val);
+		if(this.operating) {
+			this.buffer += val;
+			this.screen = this.buffer;
+		} else {
+			this.addNumber(this.buffer);
+			this.buffer = '';
+			this.operating = true;
 		}
+		console.log(this.history);
 	}
 
 	calculate() {
-		
-		//console.log(`Buffer tiene elementos? = ${this.history.length !== 0}`);
-		if(this.history.length !== 0) {
-			console.log('historial vacio');
-			this.buffer.num1 = '' + this.result;
-		} 
-		
-		//console.log('buffer dos: ',this.buffer.num2);
-		//console.log(`${this.buffer.num1} + ${this.buffer.num2} = ${parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2))}`);
-
-		switch(this.buffer.op) {
-			case 'sum':
-				this.result = parseFloat(String(this.buffer.num1)) + parseFloat(String(this.buffer.num2));
-				break;
-
-			case 'menus':
-				this.result = parseFloat(String(this.buffer.num1)) - parseFloat(String(this.buffer.num2));
-				break;
-
-			case 'times':
-				if(this.buffer.num2 === '0') {
-					//this.result = parseFloat(String(this.buffer.num1));
-					this.result = 0;
-				} 
-				// else if(this.buffer.num1 === '0') {
-				// 	this.result = 0;
-				// } 
-				else {
-					this.result = parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2));
-				}
-
-				console.log(`${parseFloat(String(this.buffer.num1))} * ${parseFloat(String(this.buffer.num2))}: ${parseFloat(String(this.buffer.num1)) * parseFloat(String(this.buffer.num2))}`);
-				break;
-
-			case 'over':
-				this.result = parseFloat(String(this.buffer.num1)) / parseFloat(String(this.buffer.num2));	
-				if(this.result === Infinity) {
-					console.log('Es infinito');
-					this.result = parseFloat(String(this.buffer.num1)) / 1;
-				}
-				console.log("El resultado de la división: "+this.result);
-				break;
-		}
-
-		
-
-		this.history.push(this.buffer);
-		//console.log(this.history);
-		this.buffer.num2 = '0';
-		this.screen = "" + this.result;
-		this.updateScreen();
-	
-	}
-
-	setOperator(val: string) {
-		this.operating = true;
-		this.buffer.op = val;
-		this.screen += ' + ';
-	}
-	
-	addSecondBuffer(val: string) {
-		if(this.buffer.num2 === '0') {
-			this.buffer.num2 = val
+		if(this.history.length === 0) {
+			console.log('El array esta vacío');
+		} else if (this.history.length === 1) {
+			this.result = this.history[0];
 		} else {
-			this.buffer.num2 += val;
+
+			switch(this.operator) {
+				case 'sum':
+					this.result = this.history[this.history.length - 2] + this.history[this.history.length - 1]
+					this.history.push(this.result);		
+					break;
+	
+				case 'menus':
+					this.result = this.history[this.history.length - 2] - this.history[this.history.length - 1]
+					this.history.push(this.result);
+					break;
+	
+				case 'times':
+					this.result = this.history[this.history.length - 2] * this.history[this.history.length - 1]
+					this.history.push(this.result);
+					break;
+	
+				case 'over':
+					this.result = this.history[this.history.length - 2] / this.history[this.history.length - 1]
+					this.history.push(this.result);
+					break;
+			}
 		}
-		this.screen = String(this.buffer.num2);
+
+		this.screen = '' + this.result;
+		console.log('result: ',this.result);
 	}
 
-	addFirstBuffer(val: string) {
-		if(this.buffer.num1 === '0') {
-			this.buffer.num1 = val;
-		}else {
-			this.buffer.num1 += val;
-		}
-		this.screen = String(this.buffer.num1);
+	addNumber(val: string) {
+		this.history.push(parseFloat(val));
 	}
 
 	updateScreen() {
 		this.screenElement.innerText = this.screen;
 	}
 
-	cleanBuffer() {
-		this.buffer.num1 = '0';
-		this.buffer.op = '';
-		this.buffer.num2 = '0';
-		this.operating = false;
+	cleanHistory() {
 		this.history = [];
+		this.buffer = '';
 	}
 
 	initElements(btns: HTMLElement[]): void {
@@ -128,7 +83,7 @@ export class Calculator {
 			switch(btn.dataset.btn) {
 				case 'trash':
 					btn.addEventListener('click', ()=>{
-					this.cleanBuffer();
+					this.cleanHistory();
 					this.screen = '0';
 					this.updateScreen();
 				})
@@ -229,7 +184,9 @@ export class Calculator {
 					break;
 				case 'over':
 					btn.addEventListener('click', ()=>{
-						this.setOperator(String(btn.dataset.btn));
+						this.operating = false;
+						this.operate('');
+						this.operator = String(btn.dataset.btn);
 						this.calculate();
 						this.updateScreen();
 						console.log(btn.dataset.btn);
@@ -238,7 +195,9 @@ export class Calculator {
 
 				case 'times':
 					btn.addEventListener('click', ()=>{
-						this.setOperator(String(btn.dataset.btn));
+						this.operating = false;
+						this.operate('');
+						this.operator = String(btn.dataset.btn);
 						this.calculate();
 						this.updateScreen();
 						console.log(btn.dataset.btn);
@@ -247,7 +206,9 @@ export class Calculator {
 				
 				case 'menus':
 					btn.addEventListener('click', ()=>{
-						this.setOperator(String(btn.dataset.btn));
+						this.operating = false;
+						this.operate('');
+						this.operator = String(btn.dataset.btn);
 						this.calculate();
 						this.updateScreen();
 						console.log(btn.dataset.btn);
@@ -256,8 +217,9 @@ export class Calculator {
 				
 				case 'sum':
 					btn.addEventListener('click', () => {
-						//this.calculateWithBuffer();
-						this.setOperator(String(btn.dataset.btn));
+						this.operating = false;
+						this.operate('');
+						this.operator = String(btn.dataset.btn);
 						this.calculate();
 						this.updateScreen();
 						console.log(btn.dataset.btn);
@@ -266,8 +228,11 @@ export class Calculator {
 
 				case 'equals':
 					btn.addEventListener('click', ()=>{
+					this.operating = false;
+					this.operate('');
 					this.calculate();
-					this.cleanBuffer();
+					this.updateScreen();
+					this.cleanHistory();
 				});
 					break;
 			}
