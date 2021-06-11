@@ -18,6 +18,7 @@
   display: flex;
   flex-direction: column;
   border-radius: 20px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.5);
 }
 .container .calculator__display {
   text-align: right;
@@ -37,18 +38,31 @@
   display: block;
   width: 50px;
   height: 50px;
-  background-color: #282828;
+  background-color: #333333;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   border-radius: 50%;
   cursor: pointer;
+  font-weight: bold;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.5);
 }
 .container .calculator__buttons .buttons__btn-0 {
   width: 100px;
   grid-column: 1/3;
   border-radius: 50px;
+}
+.container .calculator__buttons .buttons__btn-orange {
+  background-color: #fd9427;
+}
+.container .calculator__buttons .buttons__btn-gray {
+  background-color: #a6a6a6;
+  color: black;
+}
+
+.bg-orange {
+  background-color: orange;
 }
 
 /*# sourceMappingURL=style.css.map */
